@@ -14,6 +14,7 @@ dependencies:
   - xarray
   - numexpr
   - python-dateutil
+  - pyyaml
   - gdal
   - basemap
   - pyproj
@@ -30,3 +31,4 @@ dependencies:
 #    The original GUI depends on PyQt4. For cautious refactoring, start from the command-line/core functions first.
 # 2. Do not upgrade NumPy to >=1.24 before replacing np.float / np.int in legacy files.
 # 3. Basemap is kept only for legacy compatibility. A later refactor can migrate plotting to Cartopy.
+# 4. PyYAML is used only by scripts/validate_detection_config.py to read YAML config templates.
