@@ -1,0 +1,32 @@
+name: eddy-identify-legacy
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Keep Python and NumPy conservative first.
+  # The legacy code uses np.float / np.int and older Basemap/GDAL APIs.
+  - python=3.8
+  - numpy<1.24
+  - scipy<1.10
+  - matplotlib<3.7
+  - netcdf4
+  - xarray
+  - numexpr
+  - python-dateutil
+  - gdal
+  - basemap
+  - pyproj
+  - shapely
+  - pillow
+  - pip
+  - pip:
+      # Optional: only needed if later migration uses the modern public package.
+      # Do not rely on this package before baseline comparison is complete.
+      - py-eddy-tracker
+
+# Notes:
+# 1. PyQt4 is not included because it is difficult to install in modern conda environments.
+#    The original GUI depends on PyQt4. For cautious refactoring, start from the command-line/core functions first.
+# 2. Do not upgrade NumPy to >=1.24 before replacing np.float / np.int in legacy files.
+# 3. Basemap is kept only for legacy compatibility. A later refactor can migrate plotting to Cartopy.
