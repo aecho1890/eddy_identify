@@ -43,6 +43,16 @@ output:
   write_figures: false
 
 region:
+  # Legacy location name used by the current hard-coded branch logic.
+  # Known values include:
+  #   Global Ocean
+  #   South China Sea
+  #   West Pacific
+  #   North Indian Ocean
+  #   Specific area
+  #   Kuroshio Current
+  legacy_name: "Global Ocean"
+
   # Use null for global.
   lon_min: null
   lon_max: null
@@ -89,9 +99,10 @@ eddy_detection:
   amplitude_min_cm: 1.0
   amplitude_max_cm: 150.0
 
-  # Pixel number range. Fill with values used in the current run.
-  pixel_num_min: null
-  pixel_num_max: null
+  # Pixel number range. Use exact historical values for baseline comparison.
+  # The current collection logic commonly uses a broad range; adjust only after baseline is established.
+  pixel_num_min: 2
+  pixel_num_max: 10000
 
   # Keep both eddy types by default.
   detect_anticyclonic: true
@@ -107,6 +118,11 @@ merge:
   # Future optional settings.
   use_boundary_iou: false
   boundary_iou_threshold: 0.5
+
+plot:
+  # Used by legacy plotting utilities if they are called.
+  line_width: 1.0
+  dpi: 300
 
 baseline:
   # Optional paths for baseline comparison.
