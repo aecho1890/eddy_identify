@@ -1,0 +1,58 @@
+# Example baseline case: West Pacific, 2025-01-01
+#
+# Replace input_dir/input_file with your local AVISO/Copernicus file path before running.
+
+case:
+  name: "case_wp_20250101"
+  date: "20250101"
+  region_preset: "west_pacific"
+  purpose: "Multi-eddy and block-overlap baseline case."
+
+input:
+  input_dir: "E:/Data/SLA/nc/2025"
+  input_file: "dt_global_allsat_phy_l4_20250101.nc"
+  file_type: "nc"
+  pattern: "*.nc"
+  variables:
+    sla: "sla"
+    u: "ugosa"
+    v: "vgosa"
+  longitude_convention: "0_360"
+
+output:
+  output_root: "baseline_runs"
+  legacy_output_dir: "baseline_runs/case_wp_20250101/original_output"
+
+region:
+  legacy_name: "West Pacific"
+  lon_min: 90
+  lon_max: 145
+  lat_min: -20
+  lat_max: 40
+  dlon: 0.25
+  dlat: 0.25
+
+blocking:
+  lon_block: 2
+  lat_block: 2
+  outer_range: 10.0
+  pool_size: 8
+
+filter:
+  method: "gaussian_highpass"
+  z_kernel: 6
+  m_kernel: 6
+
+eddy_detection:
+  contour_interval_cm: 0.25
+  shape_error: 55
+  amplitude_min_cm: 1.0
+  amplitude_max_cm: 150.0
+  pixel_num_min: 2
+  pixel_num_max: 10000
+
+baseline:
+  source_json: null
+  baseline_records_csv: "baseline_runs/case_wp_20250101/baseline_tables/baseline_records.csv"
+  baseline_summary_csv: "baseline_runs/case_wp_20250101/baseline_tables/baseline_summary.csv"
+  match_distance_deg: 0.25
