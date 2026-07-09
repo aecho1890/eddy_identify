@@ -74,25 +74,31 @@ runtime.txt
 
 ## Phase 1：文档和环境整理
 
-已开始。
+已完成。
 
-只新增：
+新增：
 
 - `README.md`
 - `environment.yml`
 - `docs/REFACTOR_PLAN.md`
 - `docs/BASELINE_CHECKLIST.md`
 
-不修改任何 `.py` 文件。
+不修改任何 `.py` 算法文件。
 
 ## Phase 2：只读检查脚本
 
-新增一个脚本，用于读取输出 JSON 并统计结果，但不重新识别涡旋。
+已完成。
 
-建议文件：
+新增脚本：
 
 ```text
 scripts/summarize_eddy_json.py
+```
+
+新增说明：
+
+```text
+docs/JSON_SUMMARY_USAGE.md
 ```
 
 功能：
@@ -100,9 +106,36 @@ scripts/summarize_eddy_json.py
 - 读取 `eddy_info_mergeYYYYMMDD.json`；
 - 统计 AE / CE 数量；
 - 统计半径、振幅、平均速度；
-- 输出 CSV。
+- 输出逐涡旋 records CSV；
+- 输出总体 summary CSV。
 
 该脚本不改变旧结果，只用于对照。
+
+## Phase 2.5：baseline 对比脚本
+
+已完成。
+
+新增脚本：
+
+```text
+scripts/compare_eddy_baseline.py
+```
+
+新增说明：
+
+```text
+docs/BASELINE_COMPARE_USAGE.md
+```
+
+功能：
+
+- 比较两个 summary CSV；
+- 比较两个 records CSV；
+- 按同极性涡心距离匹配逐个涡旋；
+- 输出 `matched`、`missing_in_new`、`new_only` 标记；
+- 用于判断后续重构是否改变结果。
+
+该脚本不改变旧结果，只用于 baseline 对比。
 
 ## Phase 3：路径和参数配置化
 
@@ -196,6 +229,6 @@ eddy_identify/core/merge.py
 
 ## 5. 当前状态
 
-当前阶段：Step 1，文档和环境整理。
+当前阶段：Step 1–3，文档、环境说明、只读 baseline 统计和只读 baseline 对比工具。
 
 算法文件状态：未修改。
