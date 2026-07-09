@@ -1,0 +1,122 @@
+# Example detection configuration for future refactoring.
+#
+# IMPORTANT:
+# This file is currently documentation/template only.
+# The legacy detection scripts do NOT read this file yet.
+# Do not assume changing this file will change detection behavior.
+
+project:
+  name: eddy_identify
+  description: "Contour-based mesoscale eddy detection from AVISO/Copernicus SLA data."
+
+input:
+  # Directory containing input files.
+  input_dir: "./data/input"
+
+  # Supported future values: nc, tif, auto.
+  # Current legacy scripts have separate nc and tif workflows.
+  file_type: "nc"
+
+  # Filename glob pattern.
+  pattern: "*.nc"
+
+  # Variable names for NetCDF input.
+  variables:
+    sla: "sla"
+    u: "ugosa"
+    v: "vgosa"
+
+  # Whether input longitude uses 0-360 convention.
+  longitude_convention: "0_360"
+
+output:
+  output_dir: "./data/output"
+
+  # Keep legacy JSON output first.
+  write_json: true
+
+  # Future optional outputs.
+  write_records_csv: true
+  write_summary_csv: true
+  write_geojson: false
+  write_mask: false
+  write_figures: false
+
+region:
+  # Use null for global.
+  lon_min: null
+  lon_max: null
+  lat_min: null
+  lat_max: null
+
+  # Grid resolution in degrees.
+  # Current legacy code assumes 0.25 degree in many places.
+  dlon: 0.25
+  dlat: 0.25
+
+blocking:
+  # Number of blocks in longitude and latitude.
+  lon_block: 1
+  lat_block: 1
+
+  # Overlap width in degrees, corresponding to legacy outer_range.
+  outer_range: 3.0
+
+  # Multiprocessing pool size.
+  # Note: legacy nc script currently hard-codes Pool(processes=8) in one place.
+  pool_size: 8
+
+filter:
+  # Current legacy method is gaussian_highpass:
+  # sla_filtered = sla - gaussian_filter(sla, [z_kernel, m_kernel])
+  method: "gaussian_highpass"
+
+  # Legacy Gaussian kernel parameters.
+  z_kernel: 6
+  m_kernel: 6
+
+  # Future optional method, not active in legacy code.
+  bessel_cutoff_km: 500
+
+eddy_detection:
+  # Contour interval in centimeters for legacy SLA contour loop.
+  contour_interval_cm: 0.25
+
+  # Shape error threshold.
+  shape_error: 55
+
+  # Legacy amplitude range in centimeters.
+  amplitude_min_cm: 1.0
+  amplitude_max_cm: 150.0
+
+  # Pixel number range. Fill with values used in the current run.
+  pixel_num_min: null
+  pixel_num_max: null
+
+  # Keep both eddy types by default.
+  detect_anticyclonic: true
+  detect_cyclonic: true
+
+merge:
+  # Legacy duplicate-removal threshold around block overlaps.
+  center_distance_threshold_deg: 0.5
+
+  # Legacy duplicate policy: keep larger amplitude.
+  duplicate_policy: "keep_larger_amplitude"
+
+  # Future optional settings.
+  use_boundary_iou: false
+  boundary_iou_threshold: 0.5
+
+baseline:
+  # Optional paths for baseline comparison.
+  baseline_json: null
+  baseline_records_csv: null
+  baseline_summary_csv: null
+
+  # Default matching distance for 0.25 degree data.
+  match_distance_deg: 0.25
+
+notes:
+  # Free-form notes for this run.
+  text: "Template only. Legacy algorithm does not read this file yet."
