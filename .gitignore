@@ -1,0 +1,75 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+conda-env/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Local data and generated outputs
+# Do not commit raw AVISO/Copernicus data or generated eddy products.
+data/
+input/
+output/
+outputs/
+results/
+run_outputs/
+
+# Baseline and comparison outputs
+baseline_runs/
+new_runs/
+baseline_tables/
+comparison_tables/
+*_records.csv
+*_summary.csv
+*_compare.csv
+*_report.json
+legacy_eddy_select_info.json
+config_validation_report.json
+preflight_report.json
+
+# Large geospatial/scientific data
+*.nc
+*.nc4
+*.h5
+*.hdf
+*.tif
+*.tiff
+*.grd
+*.zarr/
+*.npy
+*.npz
+
+# Generated figures
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# Keep repository documentation figures only if explicitly placed under docs/assets
+!docs/assets/*.png
+!docs/assets/*.jpg
+!docs/assets/*.jpeg
+!docs/assets/*.pdf
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+~$*
