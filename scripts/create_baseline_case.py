@@ -11,37 +11,17 @@ This script has two modes:
 
 It does NOT run eddy detection. It only organizes existing outputs and calls the
 read-only summarizer when a source JSON is provided.
-
-Example: initialize a case only
-
-    python scripts/create_baseline_case.py \
-        --case-name case_wp_20250101 \
-        --date 20250101 \
-        --region-preset west_pacific \
-        --input-dir /path/to/nc/files \
-        --output-root baseline_runs
-
-Example: build from existing JSON
-
-    python scripts/create_baseline_case.py \
-        --case-name case_wp_20250101 \
-        --date 20250101 \
-        --region-preset west_pacific \
-        --input-dir /path/to/nc/files \
-        --source-json /path/to/eddy_info_merge20250101.json \
-        --output-root baseline_runs
 """
 
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -49,9 +29,23 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 try:
-    from summarize_eddy_json import summarize_json_to_tables
-except Exception:
-    summarize_json_to_tables = None  # type: ignore
+    from summarize_eddy_json import (
+        build_summary,
+        flatten_entries,
+        load_json,
+        make_record,
+        print_summary,
+        write_records_csv,
+        write_summary_csv,
+    )
+except Exception as exc:  # noqa: BLE001
+    print(
+        "ERROR: failed to import summarize_eddy_json helpers. "
+        "Make sure scripts/summarize_eddy_json.py is available.\n"
+        f"Original error: {exc}",
+        file=sys.stderr,
+    )
+    raise
 
 
 REGION_PRESETS: Dict[str, Dict[str, Any]] = {
@@ -368,17 +362,16 @@ def write_manifest(case_dir: Path, args: argparse.Namespace, preset: Dict[str, A
 
 
 def summarize_source_json(source_json: Path, records_csv: Path, summary_csv: Path) -> None:
-    if summarize_json_to_tables is None:
-        raise RuntimeError(
-            "Could not import summarize_json_to_tables from scripts/summarize_eddy_json.py. "
-            "Run summarize_eddy_json.py manually using the command in commands.md."
-        )
-    summarize_json_to_tables(
-        input_json=source_json,
-        records_csv=records_csv,
-        summary_csv=summary_csv,
-        include_seeds=False,
-    )
+    data = load_json(source_json)
+    all_records = [
+        make_record(source_json, name, scope, value)
+        for name, scope, value in flatten_entries(data)
+    ]
+    records_for_csv = [record for record in all_records if record.get("is_detected")]
+    summary = build_summary(source_json, all_records)
+    print_summary(summary)
+    write_records_csv(records_csv, records_for_csv)
+    write_summary_csv(summary_csv, summary)
 
 
 def main() -> int:
