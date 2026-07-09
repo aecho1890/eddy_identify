@@ -20,8 +20,13 @@ input:
   longitude_convention: "0_360"
 
 output:
-  output_root: "baseline_runs"
-  legacy_output_dir: "baseline_runs/case_wp_20250101/original_output"
+  output_dir: "baseline_runs/case_wp_20250101/original_output"
+  write_json: true
+  write_records_csv: true
+  write_summary_csv: true
+  write_geojson: false
+  write_mask: false
+  write_figures: false
 
 region:
   legacy_name: "West Pacific"
@@ -50,9 +55,22 @@ eddy_detection:
   amplitude_max_cm: 150.0
   pixel_num_min: 2
   pixel_num_max: 10000
+  detect_anticyclonic: true
+  detect_cyclonic: true
+
+merge:
+  center_distance_threshold_deg: 0.5
+  duplicate_policy: "keep_larger_amplitude"
+  use_boundary_iou: false
+  boundary_iou_threshold: 0.5
+
+plot:
+  line_width: 1.0
+  dpi: 300
 
 baseline:
   source_json: null
+  baseline_json: null
   baseline_records_csv: "baseline_runs/case_wp_20250101/baseline_tables/baseline_records.csv"
   baseline_summary_csv: "baseline_runs/case_wp_20250101/baseline_tables/baseline_summary.csv"
   match_distance_deg: 0.25
