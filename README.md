@@ -2,7 +2,7 @@
 
 基于等值线法的海洋中尺度涡识别与结果输出代码。
 
-> 当前仓库包含较早期的 `py-eddy-tracker` 思路代码、AVISO/Copernicus SLA 数据读取、全球分块识别、重叠区合并、绘图和 mask 输出等功能。第一阶段整理只补充文档和环境说明，不修改任何识别算法。
+> 当前仓库包含较早期的 `py-eddy-tracker` 思路代码、AVISO/Copernicus SLA 数据读取、全球分块识别、重叠区合并、绘图和 mask 输出等功能。第一阶段整理只补充文档、环境说明和 baseline 只读工具，不修改任何识别算法。
 
 ## 1. 项目定位
 
@@ -66,7 +66,52 @@
 
 - https://py-eddy-tracker.readthedocs.io/en/stable/python_module/02_eddy_identification/pet_eddy_detection.html
 
-## 5. 当前主要风险
+## 5. Baseline 只读工具
+
+当前分支新增了两个只读工具，用于后续重构前后的结果对照。
+
+### 5.1 统计已有 JSON 输出
+
+```bash
+python scripts/summarize_eddy_json.py \
+  path/to/eddy_info_merge20250101.json \
+  --records-csv baseline_records.csv \
+  --summary-csv baseline_summary.csv
+```
+
+输出：
+
+- `baseline_records.csv`：逐涡旋记录；
+- `baseline_summary.csv`：总体统计摘要。
+
+说明文档：
+
+```text
+docs/JSON_SUMMARY_USAGE.md
+```
+
+### 5.2 比较两个 baseline
+
+```bash
+python scripts/compare_eddy_baseline.py summary \
+  baseline_summary.csv \
+  new_summary.csv \
+  --out-csv summary_compare.csv
+
+python scripts/compare_eddy_baseline.py records \
+  baseline_records.csv \
+  new_records.csv \
+  --match-distance-deg 0.25 \
+  --out-csv records_compare.csv
+```
+
+说明文档：
+
+```text
+docs/BASELINE_COMPARE_USAGE.md
+```
+
+## 6. 当前主要风险
 
 在修改算法前，需要注意以下风险：
 
@@ -77,7 +122,7 @@
 5. 分块合并目前主要基于涡心距离和振幅大小，后续可增加边界重叠率、半径相似度和极性一致性判断；
 6. 当前阶段不应直接大规模移动函数，否则容易破坏隐式调用关系。
 
-## 6. 建议的谨慎重构顺序
+## 7. 建议的谨慎重构顺序
 
 ### Step 1：文档和环境整理
 
@@ -88,19 +133,29 @@
 - `docs/REFACTOR_PLAN.md`
 - `docs/BASELINE_CHECKLIST.md`
 
-### Step 2：建立基准测试
+### Step 2：建立基准统计工具
 
-选择固定日期和固定区域，保存当前版本结果，作为后续所有修改的对照。
+新增只读脚本：
 
-### Step 3：路径和参数配置化
+- `scripts/summarize_eddy_json.py`
+- `docs/JSON_SUMMARY_USAGE.md`
+
+### Step 3：建立 baseline 对比工具
+
+新增只读脚本：
+
+- `scripts/compare_eddy_baseline.py`
+- `docs/BASELINE_COMPARE_USAGE.md`
+
+### Step 4：路径和参数配置化
 
 将硬编码路径和参数逐步移动到配置文件中，但不改变默认值。
 
-### Step 4：统一 nc/tif 读取层
+### Step 5：统一 nc/tif 读取层
 
 将数据读取从识别函数中剥离，使核心算法只接收 `sla`、`u`、`v`、`lon`、`lat` 数组。
 
-### Step 5：模块化核心算法
+### Step 6：模块化核心算法
 
 逐步拆分：
 
@@ -111,11 +166,11 @@
 - 分块合并；
 - 输出。
 
-### Step 6：与官方 py-eddy-tracker 对比验证
+### Step 7：与官方 py-eddy-tracker 对比验证
 
 用同一天、同一区域数据，对比涡旋数量、涡心位置、半径、振幅、边界重叠率和漏检误检案例。
 
-## 7. 当前阶段运行建议
+## 8. 当前阶段运行建议
 
 在完全重构前，不建议直接升级到最新 NumPy / SciPy / Matplotlib。建议优先使用 legacy 环境，并先验证核心脚本能否复现历史结果。
 
